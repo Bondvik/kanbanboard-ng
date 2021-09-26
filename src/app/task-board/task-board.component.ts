@@ -10,10 +10,6 @@ import {EmptyText} from "../shared/enums/empty-text";
   styleUrls: ['./task-board.component.css']
 })
 export class TaskBoardComponent implements OnInit {
-  // inBacklog = 'Бэклог';
-  // inProcess = 'В процессе';
-  // inDone = 'Готово';
-  // inBasket = 'Корзина';
   label = StatusLabel;
   status = Status;
   message = EmptyText

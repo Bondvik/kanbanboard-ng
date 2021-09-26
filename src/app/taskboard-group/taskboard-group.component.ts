@@ -10,14 +10,11 @@ export class TaskboardGroupComponent implements OnInit, AfterViewInit {
   @Input() tasks: any[] = [];
   @Input() isBasket = false;
   @Input() message: string = '';
-  el!: ElementRef
-  render!: Renderer2
+
   constructor(
-    el: ElementRef,
-    render: Renderer2
+    protected el: ElementRef,
+    protected render: Renderer2
   ) {
-    this.el = el
-    this.render = render
   }
 
   ngOnInit(): void {
