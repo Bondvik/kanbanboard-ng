@@ -1,0 +1,28 @@
+<section class="taskboard">
+  <h2 class="visually-hidden">Ваши задачи:</h2>
+  <app-taskboard-group
+    [statusLabel]="label.BACKLOG"
+    [status]="status[0]"
+    [tasks]="backlog"
+    [message]="message.EMPTY_TASK"
+  ></app-taskboard-group>
+  <app-taskboard-group
+    [statusLabel]="label.PROCESSING"
+    [status]="status[1]"
+    [tasks]="processing"
+    [message]="message.EMPTY_TASK"
+  ></app-taskboard-group>
+  <app-taskboard-group
+    [statusLabel]="label.DONE"
+    [status]="status[2]"
+    [tasks]="done"
+    [message]="message.EMPTY_TASK"
+  ></app-taskboard-group>
+  <app-taskboard-group
+    [statusLabel]="label.BASKET"
+    [status]="status[3]"
+    [tasks]="basket"
+    [isBasket]="true"
+    [message]="message.EMPTY_BASKET"
+  ></app-taskboard-group>
+</section>
