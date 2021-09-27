@@ -24,12 +24,9 @@ export class DataService {
     'Сделать канбан-доску',
     'Позвонить бабушке'
   ];
+  draggedElement: any = null;
 
   constructor() { }
-
-  getTasks() {
-    return this.tasks;
-  }
 
   observerTasks() {
     return this.updateNotifyer$.pipe(
@@ -87,11 +84,46 @@ export class DataService {
         task.isDisabled = true;
       }
     }
+    this.needUpdateNotify$.next('')
+  }
+
+  updateTaskStatus(update: any, statusAfterDrop: any) {
+    for (let task of this.tasks) {
+      if (task.id === update.id) {
+        task.status = statusAfterDrop
+      }
+    }
+    this.needUpdateNotify$.next('')
   }
 
   deleteTask(ids: any[]) {
     this.tasks = this.tasks.filter((task) => task.status !== this.status[3])
-    console.log(this.tasks)
     this.needUpdateNotify$.next('')
+  }
+
+  setDraggedElement(taskElement: any) {
+    this.draggedElement = taskElement;
+  }
+
+  getDraggedElement() {
+    return this.draggedElement;
+  }
+
+  updatePosition(update: any, prevTaskId: any) {
+    const taskIndex = this.getTaskIndexByID(update.id);
+
+    this.tasks.splice(taskIndex, 1);
+    if (prevTaskId !== undefined) {
+      const prevTaskIndex = this.tasks.findIndex((el) => el.id === prevTaskId);
+      this.tasks.splice(prevTaskIndex + 1, 0, update);
+    } else {
+      this.tasks.unshift(update);
+    }
+
+    this.needUpdateNotify$.next('');
+  }
+
+  private getTaskIndexByID(id: string) {
+    return this.tasks.findIndex((el) => el.id === id);
   }
 }

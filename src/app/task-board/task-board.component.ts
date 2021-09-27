@@ -33,7 +33,6 @@ export class TaskBoardComponent implements OnInit {
 
   ngOnInit(): void {
     this.dataService.createTasks();
-    // this.tasks = this.dataService.getTasks();
     this.initTasksObserver()
   }
 

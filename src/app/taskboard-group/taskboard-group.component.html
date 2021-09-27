@@ -1,13 +1,18 @@
-<article class="taskboard__group taskboard__group--{{status}}">
+<article class="taskboard__group taskboard__group--{{status}}" (dragover)="onTaskBoardGroupDragover($event)">
   <h3 class="taskboard__group-heading taskboard__group-heading--{{status}}">{{statusLabel}}</h3>
   <div class="taskboard__list">
     <ng-container *ngFor="let task of tasks">
       <div
+        appDatasetId
+        [id]="task.id"
         [ngClass]="{
         'taskboard__item task': true,
         'task--active': !task.isDisabled
         }"
         class="task--{{task.status}}"
+        (dragstart)="onTaskDragstart($event)"
+        (dragend)="onTaskDragend($event, task)"
+        draggable="true"
       >
         <div class="task__body">
           <p class="task__view">{{task.title}}</p>

@@ -6,6 +6,7 @@ import { HeaderComponent } from './header/header.component';
 import { FormComponent } from './form/form.component';
 import { TaskBoardComponent } from './task-board/task-board.component';
 import { TaskboardGroupComponent } from './taskboard-group/taskboard-group.component';
+import { DatasetIdDirective } from './shared/directives/dataset-id.directive';
 
 @NgModule({
   declarations: [
@@ -13,7 +14,8 @@ import { TaskboardGroupComponent } from './taskboard-group/taskboard-group.compo
     HeaderComponent,
     FormComponent,
     TaskBoardComponent,
-    TaskboardGroupComponent
+    TaskboardGroupComponent,
+    DatasetIdDirective
   ],
   imports: [
     BrowserModule,
