@@ -2,12 +2,18 @@
   <h3 class="taskboard__group-heading taskboard__group-heading--{{status}}">{{statusLabel}}</h3>
   <div class="taskboard__list">
     <ng-container *ngFor="let task of tasks">
-      <div class="taskboard__item task task--{{task.status}}">
+      <div
+        [ngClass]="{
+        'taskboard__item task': true,
+        'task--active': !task.isDisabled
+        }"
+        class="task--{{task.status}}"
+      >
         <div class="task__body">
           <p class="task__view">{{task.title}}</p>
-          <input class="task__input" type="text" value="{{task.title}}">
+          <input class="task__input" type="text" [(ngModel)]="task.title" [disabled]="task.isDisabled" (keydown)="onEscKeyDown(task, $event)">
         </div>
-        <button class="task__edit" type="button" aria-label="Изменить"></button>
+        <button class="task__edit" type="button" aria-label="Изменить" (click)="onEditClick(task)"></button>
       </div>
     </ng-container>
     <ng-container *ngIf="!tasks.length">
@@ -16,7 +22,10 @@
       </div>
     </ng-container>
     <ng-container *ngIf="isBasket && tasks.length">
-      <button class="taskboard__button button button--clear" type="button">
+      <button
+        class="taskboard__button button button--clear"
+        type="button"
+        (click)="onDeleteClick()">
         <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect x="15.5374" y="5.16638" width="1.83333" height="14.6667" transform="rotate(45 15.5374 5.16638)"
                 fill="white" />
