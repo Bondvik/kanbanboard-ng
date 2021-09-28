@@ -1,5 +1,6 @@
 import {AfterViewInit, Component, ElementRef, Input, OnInit, Renderer2} from '@angular/core';
 import {DataService} from "../shared/services/data.service";
+import {Task} from "../shared/intefaces/task";
 
 @Component({
   selector: 'app-taskboard-group',
@@ -9,11 +10,11 @@ import {DataService} from "../shared/services/data.service";
 export class TaskboardGroupComponent implements OnInit, AfterViewInit {
   @Input() statusLabel: string = '';
   @Input() status: string = '';
-  @Input() tasks: any[] = [];
+  @Input() tasks: Task[] = [];
   @Input() isBasket = false;
   @Input() message: string = '';
-  localTask: any = null;
-  article: any = null;
+  localTask: Task = {} as Task;
+  article: HTMLElement | null = null;
 
   constructor(
     protected el: ElementRef,
@@ -33,38 +34,37 @@ export class TaskboardGroupComponent implements OnInit, AfterViewInit {
 
   initTasksObserver() {
     this.dataService.observerTasks().subscribe(
-      (data) => {
+      (data: Task[]) => {
         this.tasks = data;
       }
     )
   }
 
-  onEditClick(task: any) {
+  onEditClick(task: Task) {
     this.localTask = Object.assign({}, task);
     this.dataService.updateTask(task, false);
   }
 
-  onEscKeyDown(task: any, event: any) {
+  onEscKeyDown(task: Task, event: KeyboardEvent) {
     if (['Escape', 'Esc'].includes(event.key)) {
       this.dataService.updateTask(this.localTask, true);
     }
     if (['Enter'].includes(event.key)) {
-      this.dataService.updateTask(task, false);
+      this.dataService.updateTask(task);
     }
   }
 
   onDeleteClick() {
-    const ids = this.tasks.map(({id}) => id);
-    this.dataService.deleteTask(ids);
+    this.dataService.deleteTask();
   }
 
-  onTaskBoardGroupDragover(event: any) {
+  onTaskBoardGroupDragover(event: DragEvent) {
     event.preventDefault();
     //перетаскиваемый элемент
     const draggedElement = this.dataService.getDraggedElement();
 
     //тот элемент на который падает draggedElement (перетаскиваемый элемент)
-    const droppedItem = event.target;
+    const droppedItem: HTMLDivElement = event.target as HTMLDivElement;
 
     //если событие произошло на том элементе, который мы перемещаем
     if (droppedItem === draggedElement) {
@@ -77,35 +77,40 @@ export class TaskboardGroupComponent implements OnInit, AfterViewInit {
       droppedItem.nextElementSibling : droppedItem;
 
     if (droppedItem.classList.contains('task')) {
-      this.render.insertBefore(this.article.querySelector('.taskboard__list'), draggedElement, referenceElement);
+      this.render.insertBefore(this.article?.querySelector('.taskboard__list'), draggedElement, referenceElement);
     }
-
-    //если в родительском листе нет ни одного целевого элемента (droppedItem)
-    // if (this.tasks.length === 0) {
-    //   this.render.appendChild(this.article.querySelector('.taskboard__list'), draggedElement);
-    // }
   }
 
-  onTaskDragstart(event: any) {
-    event.target.classList.add('task--dragged');
+  onTaskDragstart(event: DragEvent) {
+    (event.target as HTMLDivElement).classList.add('task--dragged');
     this.dataService.setDraggedElement(event.target);
   }
 
-  onTaskDragend(event: any, task: any) {
+  onTaskDragend(event: DragEvent, task: Task) {
     const draggedElement = this.dataService.getDraggedElement();
     //для обновления позиции в массиве задач
-    const prevTaskId = event.target.previousElementSibling ?
-      event.target.previousElementSibling.dataset.id : undefined;
+    const prevTaskId = (event.target as HTMLDivElement).previousElementSibling ?
+      (event.target as any).previousElementSibling?.dataset?.id : undefined;
 
     //для обновления статуса
-    const newTaskStatus = draggedElement?.parentElement?.parentElement?.dataset?.status;
+    const newTaskStatus = this.getParentElement(draggedElement, 'taskboard__group');
     if (newTaskStatus) {
       this.dataService.updateTaskStatus(task, newTaskStatus)
     }
     this.dataService.updatePosition(task, prevTaskId);
 
     this.dataService.setDraggedElement(null);
-    event.target.classList.remove('task--dragged');
+    (event.target as HTMLDivElement).classList.remove('task--dragged');
     delete task.prevTaskId;
+  }
+
+  protected getParentElement(element: HTMLElement, classElement: string): string | undefined {
+    let parent: string | undefined;
+    if ((element as HTMLElement).parentElement?.classList?.contains(classElement)) {
+      parent = element?.parentElement?.dataset?.status;
+    } else {
+      parent = this.getParentElement((element?.parentElement as HTMLElement), classElement);
+    }
+    return parent;
   }
 }

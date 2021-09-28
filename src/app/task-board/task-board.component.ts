@@ -3,6 +3,7 @@ import {StatusLabel} from "../shared/enums/status-label";
 import {Status} from "../shared/enums/status";
 import {DataService} from "../shared/services/data.service";
 import {EmptyText} from "../shared/enums/empty-text";
+import {Task} from "../shared/intefaces/task";
 
 @Component({
   selector: 'app-task-board',
@@ -13,7 +14,7 @@ export class TaskBoardComponent implements OnInit {
   label = StatusLabel;
   status = Status;
   message = EmptyText
-  tasks: any[] = [];
+  tasks: Task[] = [];
   get backlog() {
     return this.getTasks(this.status[0]);
   }
@@ -38,13 +39,13 @@ export class TaskBoardComponent implements OnInit {
 
   initTasksObserver() {
     this.dataService.observerTasks().subscribe(
-      (data) => {
+      (data: Task[]) => {
         this.tasks = data;
       }
     )
   }
 
-  getTasks(status: string): any[] {
+  getTasks(status: string): Task[] {
     return this.tasks.filter(task => task.status === status)
   }
 
